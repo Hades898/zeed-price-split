@@ -117,25 +117,29 @@
   .runner.exit{animation:exit .8s cubic-bezier(.5,0,.8,.3) forwards}
   @keyframes exit{to{transform:translateX(420px)}}
 
-  .track{position:relative;height:50px;margin-top:16px;user-select:none;-webkit-user-select:none}
-  .piece{position:absolute;top:0;height:50px;border:1px solid var(--line);border-radius:10px;background:var(--cream);
-         display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);overflow:hidden;
-         transition:left .6s var(--spring),width .6s var(--spring),opacity .3s,background-color .5s,color .5s,border-color .5s}
-  .piece.today,.piece.hot{background:var(--green);border-color:var(--green);color:var(--ink)}
-  .track.tight .piece{font-size:9px;letter-spacing:0}
-  .track.notrans .piece{transition:none}
+  .track{position:relative;height:50px;margin-top:18px;user-select:none;-webkit-user-select:none}
+  .piece{position:absolute;top:0;height:100%;transition:left .6s var(--spring),width .6s var(--spring),opacity .3s}
+  .piece .bar{position:absolute;left:0;right:0;top:15px;height:8px;border-radius:5px;background:#DDDDD5;
+              transition:top .55s var(--out),height .55s var(--out),border-radius .55s,background-color .5s}
+  .piece .lab{position:absolute;left:0;right:0;top:31px;text-align:center;font-size:12px;font-weight:500;color:var(--muted);white-space:nowrap;transition:opacity .35s .15s}
+  .piece.today .bar,.piece.hot .bar{background:var(--green)}
+  .piece.today .lab{color:var(--ink);font-weight:700}
+  .piece.today.paid .lab{color:var(--deep)}
+  .track.big .piece .bar{top:0;height:50px;border-radius:10px}
+  .track.big .piece .lab,.track.big .yr{opacity:0;transition:none}
+  .track.tight .piece .lab{font-size:10.5px}
+  .track.notrans .piece,.track.notrans .bar{transition:none}
+  .yr{position:absolute;top:-2px;font-size:10px;font-weight:600;color:var(--muted);padding-left:5px;border-left:1px solid #C9C9C0;height:14px;line-height:12px;transition:left .6s var(--spring),opacity .35s .2s}
   @keyframes jolt{0%{transform:translateY(0)}40%{transform:translateY(-7px)}100%{transform:translateY(0)}}
   .piece.jolt{animation:jolt .55s var(--out) both;animation-delay:var(--delay)}
   .slab{position:absolute;inset:0;border-radius:10px;background:var(--green);display:flex;align-items:center;justify-content:center;gap:4px;
         font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.01em;z-index:2;transition:opacity .15s}
   .slab .riyal{width:.62em;height:.62em}
   .slab.gone{opacity:0;pointer-events:none}
-  .chk{position:absolute;inset:0;display:grid;place-items:center;background:var(--green);animation:pop .35s var(--spring) both}
-  .chk::after{content:"";width:22px;height:22px;border-radius:50%;background:var(--ink) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M4.5 8.2l2.3 2.3 4.7-4.9' fill='none' stroke='%23F9F8F1' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>") center/100% no-repeat}
-  .track.tight .chk::after{width:16px;height:16px}
   @keyframes pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
-  .ends{display:flex;justify-content:space-between;margin-top:8px;font-size:12.5px;color:var(--muted)}
+  .ends{display:flex;justify-content:space-between;margin-top:12px;font-size:12.5px;color:var(--muted)}
   .ends b{color:var(--ink);font-weight:600}
+  .ends .riyal{width:.8em;height:.8em;margin:0 1px;vertical-align:-.05em}
 
   .save{margin-top:14px;padding:10px 12px;border-radius:12px;background:var(--mint);color:var(--deep);font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:6px}
   .save .riyal{width:.8em;height:.8em}
@@ -253,10 +257,11 @@
       <div class="runner" id="runner" aria-hidden="true"><div class="bob-wrap"><div class="bob"><div class="speed"><i></i><i></i><i></i></div><svg viewBox="0 0 144.076 114.406"><path d="M144.076 64.2363H112.842L90.0211 108.053L89.9919 108.482L96.2649 113.198C96.5863 113.562 96.4621 114.246 95.9071 114.391L50.4549 114.406C49.2865 114.137 48.8629 113.62 49.2061 112.608L63.3954 84.3289C56.5673 88.5715 48.9725 92.5085 40.5305 94.0222C24.4791 96.904 14.2918 89.3647 11.2319 76.6441C9.80792 70.7131 10.0343 64.5419 10.9398 58.5673L3.31579 53.5169C2.74617 53.0511 2.76078 52.3598 3.57869 52.1415L37.8358 52.0978C38.2813 52.025 39.0481 52.5053 39.0481 52.8546V63.8797L54.0771 52.0614C43.6342 46.3779 36.3022 36.6045 33.8047 26.4381C32.848 22.5448 32.3807 17.4798 33.3665 13.5865C33.4322 13.3245 33.4688 12.8223 33.8266 12.735L80.1332 12.7568L80.2135 12.866C80.9365 18.7097 84.5368 24.0876 90.2548 27.4861C94.5853 30.0622 99.7557 31.343 105.05 31.5759L143.974 31.6123L144.076 64.2436V64.2363Z" fill="#06C18B"/><path d="M48.1838 113.685L48.1034 113.664C47.5484 113.533 46.767 113.285 46.3873 112.601C46.1317 112.143 46.1098 111.575 46.3289 110.927L46.3654 110.833L59.4154 84.8237C53.7485 88.2004 46.5553 91.839 38.4711 93.2945C22.9674 96.0744 11.6993 89.372 8.33276 75.3705C7.0913 70.1891 6.96715 64.3309 7.96032 57.4757L0.657593 52.6363C0.146402 52.2142 -0.0872856 51.6393 0.0295581 51.0935C0.146402 50.5623 0.56996 50.162 1.198 50.0019L1.38787 49.9801L35.5939 49.9364C36.1489 49.8709 36.7258 50.1693 37.069 50.4531C37.4122 50.7369 37.5875 51.0717 37.5875 51.421V60.9397L50.5791 50.7224C40.7788 45.0534 33.4615 35.5784 30.9055 25.1719C29.7371 20.4271 29.5764 15.4858 30.4673 11.9636L30.4893 11.8545C30.555 11.527 30.7083 10.7701 31.4605 10.5809L31.6358 10.5591L78.3221 10.5809L78.7311 11.1413L78.753 11.3232C79.4614 17.0286 82.9959 22.1664 88.4437 25.4047C92.4164 27.7699 97.4188 29.1453 102.903 29.3927L142.52 29.4291L142.623 63.5086H111.097L88.5971 106.706L94.6218 111.255C94.9578 111.626 95.0673 112.164 94.9213 112.659C94.7752 113.147 94.3955 113.511 93.9062 113.642L93.7236 113.664L48.1838 113.678V113.685ZM47.6945 111.429C47.6288 111.64 47.6142 111.815 47.658 111.888C47.6799 111.932 47.804 112.084 48.3517 112.223L93.4899 112.208L87.0489 107.369L87.1073 106.394L110.206 62.0531H141.155L141.06 30.8773L102.867 30.8409C97.1121 30.5862 91.876 29.1307 87.6916 26.6419C82.0173 23.2652 78.2783 17.9601 77.3728 12.0146L31.9498 11.9927C31.9425 12.0364 31.9279 12.0801 31.9206 12.1164C31.906 12.1819 31.8914 12.2402 31.8841 12.2984C31.0516 15.6023 31.2122 20.2743 32.3295 24.8007C34.8782 35.1563 42.3197 44.5585 52.2441 49.9583L53.2154 50.4895L36.1343 63.9234V51.552C36.032 51.4647 35.8349 51.3701 35.7472 51.3701H35.6888L35.6523 51.3773L1.51201 51.421C1.51201 51.421 1.54853 51.4647 1.57043 51.4865L9.54502 56.7698L9.47929 57.2283C8.44231 64.0907 8.53724 69.9126 9.7641 75.0212C12.9262 88.1931 23.5663 94.4879 38.2228 91.8536C47.1395 90.2526 54.9899 85.8862 60.8321 82.2548L63.0302 80.894L47.7018 111.429H47.6945Z" fill="#242424"/><path d="M132.917 0.793003C142.659 -0.123934 144.229 9.74405 141.732 15.595C139.512 20.7982 132.041 27.1804 125.22 23.0178C116.53 17.7199 122.672 1.7536 132.917 0.785726" fill="#06C18B"/><path d="M128.419 25.0846C126.659 25.0846 124.957 24.597 123.38 23.6437C119.626 21.3586 118.093 16.9704 119.269 11.8981C120.525 6.46928 125.096 0.662012 131.391 0.0652756C136.167 -0.393193 138.73 1.65172 140.038 3.43465C142.74 7.10968 142.396 12.4585 140.943 15.8788C139.585 19.059 136.079 23.1415 131.574 24.5751C130.515 24.9172 129.456 25.0846 128.412 25.0846H128.419ZM131.523 1.51345C125.914 2.0447 121.832 7.29889 120.685 12.2256C119.656 16.6575 120.948 20.4562 124.132 22.3992C126.294 23.7164 128.638 23.9784 131.121 23.1925C135.181 21.8971 138.358 18.2002 139.592 15.3112C140.928 12.1601 141.111 7.37166 138.854 4.30065C137.27 2.14658 134.801 1.20781 131.523 1.52073V1.51345Z" fill="#242424"/><path d="M108.139 0.793003C117.202 -0.0584379 119.239 8.78345 117.319 14.4888C115.471 19.9905 107.927 27.3041 100.61 23.1488C91.5766 18.011 97.7401 1.77544 108.139 0.793003Z" fill="#06C18B"/><path d="M103.655 25.0991C101.976 25.0991 100.34 24.6552 98.7917 23.7819C94.9285 21.5842 93.2781 17.2396 94.3735 12.1528C95.5712 6.60755 100.157 0.676567 106.613 0.0652759C111.141 -0.371361 113.667 1.53529 114.996 3.20178C117.633 6.51294 117.684 11.3742 116.559 14.7217C115.376 18.2366 111.842 22.6903 107.372 24.3932C106.131 24.8662 104.882 25.0991 103.663 25.0991H103.655ZM106.752 1.51345C100.997 2.05925 96.893 7.42988 95.8049 12.4585C94.8482 16.8903 96.2357 20.6527 99.5147 22.5157C101.83 23.8256 104.291 24.0002 106.847 23.0324C110.892 21.4896 114.098 17.4507 115.172 14.2632C116.136 11.3814 116.136 6.97869 113.85 4.11144C112.251 2.10291 109.855 1.23692 106.752 1.52073V1.51345Z" fill="#242424"/><path d="M79.9068 48.9758C76.8543 48.9758 73.8821 48.0444 71.6036 45.8102C68.164 42.4409 67.5506 37.0921 69.9605 31.5031L70.3183 30.6808L90.8463 45.1116L89.9992 45.7084C87.1804 47.6878 83.4852 48.9686 79.8995 48.9686L79.9068 48.9758Z" fill="#E6E6E1" stroke="#242424" stroke-width="2" stroke-miterlimit="10"/></svg></div></div></div>
     </div>
     <div class="then" id="then"></div>
-    <div class="track" id="track" aria-hidden="true">
+    <div class="track big" id="track" aria-hidden="true">
+      <span class="yr" id="yr">2027</span>
       <div class="slab" id="slab"><svg class="riyal"><use href="#i-riyal"/></svg>23,999</div>
     </div>
-    <div class="ends"><span><b>Today</b></span><span id="lastPay"></span></div>
+    <div class="ends"><span id="each"></span><span id="lastPay"></span></div>
     <div class="save" id="save" aria-live="polite"></div>
   </div>
 
@@ -313,19 +318,25 @@
   const track = $('track');
   const pieces = Array.from({length:12}, (_,i) => {
     const p = document.createElement('div'); p.className = 'piece' + (i===0?' today':'');
+    p.innerHTML = '<span class="bar"></span><span class="lab"></span>';
     p.addEventListener('animationend', e => { if (e.animationName==='jolt') p.classList.remove('jolt'); });
     track.appendChild(p); return p;
   });
   function layout(gap = 5){
     const W = track.clientWidth, w = (W - (n-1)*gap)/n, ds = dates(n);
-    track.classList.toggle('tight', w < 34);
+    track.classList.toggle('tight', w < 40);
     pieces.forEach((p,i) => {
       if (i < n){
         p.style.left = (i*(w+gap))+'px'; p.style.width = w+'px'; p.style.opacity = 1;
-        if (!p.querySelector('.chk')) p.textContent = i===0 ? (w < 34 ? '' : 'Now') : (w < 26 ? mon(ds[i])[0] : mon(ds[i]));
+        p.querySelector('.lab').textContent = i===0 ? (paid ? (w < 40 ? 'Paid' : 'Paid ✓') : (w < 40 ? 'Now' : 'Today')) : (w < 24 ? mon(ds[i])[0] : mon(ds[i]));
+        p.classList.toggle('paid', i===0 && paid);
       } else { p.style.left = W+'px'; p.style.width = '0px'; p.style.opacity = 0; }
     });
     $('lastPay').innerHTML = `Last payment <b>${longDate(ds[n-1])}</b>`;
+    $('each').innerHTML = `<b>${n} ×</b> ${R}<b>${fmt(calc(n).monthly)}</b>`;
+    const j = ds.findIndex(d => d.getMonth()===0), yr = $('yr');
+    yr.style.opacity = j > 0 ? '' : 0;
+    if (j > 0) yr.style.left = (j*(w+gap) - 2) + 'px';
   }
   new ResizeObserver(() => layout()).observe(track);
 
@@ -357,7 +368,7 @@
     $('cta').innerHTML = `Pay ${R}<b>${fmt(c.monthly)}</b> today`;
     const save = $('save');
     save.className = 'save' + (c.save ? '' : ' off');
-    const total = fmt(Math.round(c.monthly*k*100)/100);
+    const total = fmt(Math.round(PRICE*(1-DISC[k])*100)/100);
     save.innerHTML = c.save ? `Total ${R}${total}. You save ${R}${fmt(c.save)} (2% off)` : `Total ${R}${total}. Choose 4 or more months to get 2% off`;
     if (c.save && !had && opened){ void save.offsetWidth; save.classList.add('pop'); }
     moveInd();
@@ -402,6 +413,7 @@
     $('slab').classList.add('gone');
     await wait(80);
     track.classList.remove('notrans');
+    setTimeout(() => track.classList.remove('big'), reduce?0:380);
     pieces.forEach((p,i) => {
       if (i>=n) return;
       p.style.setProperty('--delay', (i*40)+'ms');
@@ -413,12 +425,12 @@
 
   function resetPaid(){
     paid = false; $('cta').classList.remove('done');
-    pieces[0].querySelector('.chk')?.remove();
+    layout();
     $('lbl').textContent = 'Monthly payment'; $('runner').classList.remove('exit');
   }
   $('cta').onclick = () => {
     if (paid) return; paid = true;
-    const c = document.createElement('span'); c.className='chk'; pieces[0].textContent=''; pieces[0].appendChild(c);
+    layout();
     $('lbl').textContent = 'First payment done';
     const r = $('runner'); r.classList.remove('in'); r.classList.add('exit');
     const nx = dates(n)[1], cta = $('cta'); cta.classList.add('done');
@@ -428,7 +440,7 @@
   async function open(){
     if (opened) return; opened = true;
     $('slab').classList.remove('gone'); $('amount').classList.remove('hide');
-    pieces.forEach(p => p.classList.remove('jolt','hot'));
+    pieces.forEach(p => p.classList.remove('jolt','hot')); track.classList.add('big');
     resetPaid(); setPlan(n);
     document.body.classList.add('sheet-open');
     const r = $('runner'); r.classList.remove('in'); void r.offsetWidth;
