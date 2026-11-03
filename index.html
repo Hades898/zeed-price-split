@@ -15,8 +15,10 @@
     --stage:#131513;
     --display:"Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
     --body:"Instrument Sans", "Helvetica Neue", Arial, sans-serif;
-    --spring:cubic-bezier(.34,1.3,.55,1);
+    --spring:cubic-bezier(.3,1.12,.5,1);
+    --line:rgba(30,30,30,.13);
     --out:cubic-bezier(.2,.9,.25,1);
+    --grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .55 0 0 0 0 .55 0 0 0 0 .55 0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.32'/></svg>");
   }
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -85,7 +87,8 @@
   .amount .riyal{width:.5em;height:.5em;margin:.12em .1em 0 0}
   .amount .dec{font-size:.42em;margin-top:.1em;letter-spacing:-.01em}
   .amount.hide{visibility:hidden}
-  .then{margin-top:8px;font-size:14.5px;color:var(--ink);display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+  .then{position:absolute;left:0;top:4px;max-width:58%;margin:0;font-size:14.5px;line-height:1.5;color:var(--ink)}
+  .then .riyal{margin:0 1px 0 3px}
   .then b{font-weight:700}
 
   .odo{display:inline-flex}
@@ -112,11 +115,25 @@
   .runner.in{animation:runin 1s var(--out) both}
   .runner.hop .bob-wrap{animation:hop .5s var(--out)}
 
-  .track{position:relative;height:76px}
-  .piece{position:absolute;top:0;height:76px;border:2px solid var(--ink);border-radius:12px;background:var(--paper);
+  .track{position:relative;height:76px;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+  .track.dragging{cursor:grabbing}
+  .tip{position:absolute;z-index:6;left:0;top:0;transform:translate(-50%,calc(-100% - 12px));background:var(--ink);color:var(--cream);padding:7px 11px;border-radius:10px;font-size:12.5px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s,left .25s var(--out)}
+  .tip b{color:var(--green);font-weight:700}
+  .tip .riyal{width:.8em;height:.8em;margin-right:2px;vertical-align:-.05em}
+  .tip.on{opacity:1}
+  .tip::after{content:"";position:absolute;left:50%;bottom:-5px;width:10px;height:10px;background:var(--ink);transform:translateX(-50%) rotate(45deg);border-radius:2px}
+  .runner.exit{animation:exit .8s cubic-bezier(.5,0,.8,.3) forwards}
+  @keyframes exit{to{transform:translateX(520px)}}
+  .piece{font:inherit;color:var(--ink);text-align:left;cursor:inherit;position:absolute;top:0;height:76px;border:2px solid var(--ink);border-radius:12px;background:var(--paper);
          box-shadow:0 4px 0 var(--ink);display:flex;flex-direction:column;justify-content:flex-end;padding:0 0 9px 8px;overflow:hidden;
          transition:left .65s var(--spring),width .65s var(--spring),opacity .35s,background-color .5s,transform .5s var(--spring)}
-  .piece.today,.piece.hot{background:var(--green)}
+  .piece.today,.piece.hot{background-color:var(--green);background-image:var(--grain);background-blend-mode:multiply}
+  .piece.lift{transform:translateY(-8px)}
+  .piece.next{animation:nextpulse 1.2s var(--out) 2}
+  @keyframes nextpulse{50%{box-shadow:0 4px 0 var(--ink),0 0 0 5px rgba(6,193,139,.45)}}
+  .stampd{position:absolute;left:50%;top:44%;font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.06em;color:var(--ink);border:2.5px solid var(--ink);border-radius:6px;padding:2px 6px;background:var(--cream);transform:translate(-50%,-50%) rotate(-12deg);animation:stampin .45s var(--spring) both;pointer-events:none}
+  .track.tight .stampd{font-size:9px;padding:1px 3px;border-width:2px}
+  @keyframes stampin{from{opacity:0;transform:translate(-50%,-50%) rotate(-30deg) scale(2.4)}to{opacity:1;transform:translate(-50%,-50%) rotate(-12deg) scale(1)}}
   .piece .d{font-family:var(--display);font-weight:800;font-size:20px;line-height:1;letter-spacing:-.02em}
   .piece .m{font-style:normal;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
   .piece.today .d{font-size:16px}
@@ -128,7 +145,7 @@
   @keyframes jolt{0%{transform:translateY(0) rotate(0)}35%{transform:translateY(-14px) rotate(var(--rot))}100%{transform:translateY(0) rotate(0)}}
   .piece.jolt{animation:jolt .6s var(--out) both;animation-delay:var(--delay)}
 
-  .slab{position:absolute;inset:0;border:2px solid var(--ink);border-radius:12px;background:var(--green);box-shadow:0 4px 0 var(--ink);
+  .slab{position:absolute;inset:0;border:2px solid var(--ink);border-radius:12px;background:var(--green) var(--grain);background-blend-mode:multiply;box-shadow:0 4px 0 var(--ink);
         display:flex;align-items:center;justify-content:space-between;padding:0 18px;z-index:2;transition:opacity .15s}
   .slab .p{font-family:var(--display);font-weight:800;font-size:34px;letter-spacing:-.02em;display:flex;align-items:center;gap:4px}
   .slab .p .riyal{width:.6em;height:.6em}
@@ -137,6 +154,8 @@
 
   .ends{display:flex;justify-content:space-between;margin-top:14px;font-size:13px;color:var(--muted)}
   .ends b{color:var(--ink);font-weight:700}
+  .ends .hint{font-size:12px;display:flex;align-items:center;gap:6px}
+  .ends .hint::before,.ends .hint::after{content:"";width:14px;height:2px;border-radius:2px;background:currentColor;opacity:.5}
 
   /* plan chips */
   .plans{margin-top:18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -168,9 +187,9 @@
   .stk .f,.stk .b{position:absolute;inset:0;backface-visibility:hidden;border:1.5px solid var(--ink);border-radius:12px;display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 10px;text-align:center}
   .stk .f{font-family:var(--display);font-weight:800;font-size:16px;line-height:1.05}
   .stk .b{transform:rotateY(180deg);font-size:11.5px;line-height:1.3;font-weight:500;background:var(--paper);color:var(--ink)}
-  .stk.s1 .f{background:var(--green)}
+  .stk.s1 .f{background:var(--green) var(--grain);background-blend-mode:multiply}
   .stk.s2 .f{background:var(--ink);color:var(--cream)}
-  .stk.s3 .f{background:var(--paper)}
+  .stk.s3 .f{background:var(--paper) var(--grain);background-blend-mode:multiply}
   .stk .f svg{width:18px;height:18px;flex:none}
   .stk.stamp{animation:stamp .55s var(--spring) both;animation-delay:var(--delay)}
   @keyframes stamp{0%{opacity:0;transform:rotate(calc(var(--r) - 14deg)) scale(1.7)}60%{opacity:1}100%{opacity:1;transform:rotate(var(--r)) scale(1)}}
@@ -180,12 +199,75 @@
        box-shadow:0 5px 0 var(--green);transition:transform .2s var(--spring),box-shadow .2s var(--spring)}
   .cta:hover{transform:translateY(-2px);box-shadow:0 7px 0 var(--green)}
   .cta:active{transform:translateY(3px);box-shadow:0 2px 0 var(--green)}
+  .cta.done{background:var(--green);color:var(--ink);box-shadow:0 5px 0 var(--ink)}
+  .cta.done b{color:var(--ink)}
   .cta .riyal{width:.75em;height:.75em;color:var(--green)}
   .cta b{color:var(--green);font-weight:700}
 
   .flyer{position:fixed;z-index:50;margin:0;pointer-events:none;transform-origin:0 0}
 
   .replay{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;height:40px;padding:0 16px;border-radius:999px;border:1.5px solid var(--ink);background:var(--green);font-weight:700;font-size:13px;box-shadow:3px 3px 0 var(--ink)}
+
+
+  /* ---------- professional pass ---------- */
+  .zw{border:1px solid var(--line);box-shadow:0 1px 2px rgba(0,0,0,.04),0 10px 26px -14px rgba(2,137,96,.45)}
+  .zw:hover{transform:translateY(-2px);box-shadow:0 2px 4px rgba(0,0,0,.05),0 16px 32px -14px rgba(2,137,96,.55)}
+  .zw-dots i{border:0;background:#D8D8D0;height:5px}
+  .zw-amt{font-weight:700}
+  .close{border:1px solid var(--line)}
+  .close:hover{transform:none;background:var(--cream)}
+  .product img{border:1px solid var(--line)}
+  .amount{font-weight:700}
+  .piece{border:1px solid var(--line);box-shadow:0 1px 2px rgba(0,0,0,.05),0 6px 14px -10px rgba(0,0,0,.25)}
+  .piece.today,.piece.hot{background-image:none;border-color:var(--green)}
+  .piece .d{font-weight:700;font-size:18px}
+  .piece .m{color:var(--muted)}
+  .piece.today .m,.piece.hot .m{color:var(--ink)}
+  .piece.lift{transform:translateY(-6px)}
+  @keyframes jolt{0%{transform:translateY(0)}40%{transform:translateY(-8px) rotate(calc(var(--rot) * .4))}100%{transform:translateY(0)}}
+  .slab{border:0;background-image:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 16px -10px rgba(2,137,96,.8)}
+  .slab .p{font-weight:700}
+  .stampd{font-family:var(--body);font-weight:600;font-size:11px;letter-spacing:.04em;color:var(--cream);background:var(--ink);border:0;border-radius:999px;padding:3px 8px;transform:translate(-50%,-50%);animation:stampin2 .4s var(--spring) both}
+  .track.tight .stampd{font-size:8.5px;padding:2px 4px;border:0}
+  @keyframes stampin2{from{opacity:0;transform:translate(-50%,-50%) scale(.6)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+  .speed i{height:2px;background:rgba(30,30,30,.3)}
+  .runner{width:86px}
+  .plans{display:block}
+  .plans .k{display:block;margin:0 0 8px}
+  .chips{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:0;padding:4px;background:var(--paper);border:1px solid var(--line);border-radius:14px}
+  .chips .ind{position:absolute;top:4px;bottom:4px;left:0;border-radius:10px;background:var(--ink);box-shadow:0 4px 12px -4px rgba(0,0,0,.4);transition:transform .45s var(--spring),width .45s var(--spring)}
+  .chip{position:relative;z-index:1;height:50px;min-width:0;padding:0;border:0;border-radius:10px;background:none;box-shadow:none;font-family:var(--body);font-weight:600;font-size:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;transition:color .25s}
+  .chip:hover,.chip[aria-checked="true"]{transform:none;box-shadow:none;background:none}
+  .chip[aria-checked="true"]{color:var(--cream)}
+  .chip .off{position:static;transform:none;border:0;background:none;padding:0;font-size:10.5px;font-weight:600;color:var(--deep)}
+  .chip .off.none{color:var(--muted);font-weight:500}
+  .chip[aria-checked="true"] .off{color:var(--green)}
+  .chip[aria-checked="true"] .off.none{color:#B9B9B0}
+  .save .pill{transform:none;border:0;background:rgba(6,193,139,.14);color:var(--deep);font-size:13px;padding:4px 10px}
+  .save{color:var(--muted);font-size:13.5px}
+  @keyframes pop{0%{opacity:0;transform:translateY(4px)}100%{opacity:1;transform:none}}
+  .salary{border:1px solid var(--line)}
+  .switch{border:0;background:#D8D8D0}
+  .switch::after{border:0;top:4px;left:4px;width:22px;height:22px;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+  .stk{--r:0deg!important}
+  .stk.stamp{animation-name:rise}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .stk .f,.stk.s1 .f,.stk.s2 .f,.stk.s3 .f{background:var(--paper);color:var(--ink);border:1px solid var(--line);font-family:var(--body);font-weight:600;font-size:13.5px;justify-content:flex-start;padding:6px 12px;text-align:left}
+  .stk .f svg{color:var(--deep)!important}
+  .stk.s1 .f::before,.stk.s3 .f::before{content:"";flex:none;width:16px;height:16px;border-radius:50%;background:var(--green) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M4.5 8.2l2.3 2.3 4.7-4.9' fill='none' stroke='%231E1E1E' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>") center/100% no-repeat}
+  .stk .b{border:1px solid var(--green);background:#F1FBF7;text-align:left;justify-content:flex-start;padding:6px 12px}
+  .cta{box-shadow:0 1px 2px rgba(0,0,0,.12),0 12px 26px -12px rgba(30,30,30,.6)}
+  .cta:hover{transform:translateY(-1px);box-shadow:0 2px 4px rgba(0,0,0,.12),0 16px 30px -12px rgba(30,30,30,.6)}
+  .cta:active{transform:translateY(1px);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+  .cta.done{background:var(--green);color:var(--ink);box-shadow:0 12px 26px -14px rgba(2,137,96,.9)}
+  .replay{border:0;background:var(--cream);box-shadow:0 6px 18px rgba(0,0,0,.35)}
+  .zw-dots{width:100%}
+  .zw-dots i{flex:1 1 0;min-width:0;max-width:16px}
+  .track.xtight .piece{padding:0 0 8px;align-items:center;text-align:center}
+  .track.xtight .piece .d{font-size:13px}
+  .track.xtight .piece .m{font-size:7.5px;letter-spacing:0;margin-top:2px}
+  .track.xtight .piece.today .d{font-size:8.5px}
+  .track.xtight .stampd{font-size:0;width:16px;height:16px;padding:0;top:36%;background:var(--ink) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M4.5 8.2l2.3 2.3 4.7-4.9' fill='none' stroke='%23F9F8F1' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>") center/100% no-repeat}
 
   /* ---------- narrow ---------- */
   @media (max-width:760px){
@@ -206,7 +288,9 @@
     .runner{width:84px;right:16px}
     .lane{padding-top:68px}
     .stk .f{font-size:14px}
-    .stk .b{font-size:10.5px;padding:4px 6px}
+    .stk .b{font-size:10.5px;padding:4px 8px}
+    .stk .f,.stk.s1 .f,.stk.s2 .f,.stk.s3 .f{font-size:12px;padding:6px 8px;gap:5px}
+    .chip{font-size:15px}
     body.sheet-open .replay{display:none}
   }
   @media (prefers-reduced-motion:reduce){
@@ -275,10 +359,11 @@
     <div class="amount" id="amount" aria-live="polite">
       <svg class="riyal"><use href="#i-riyal"/></svg><span class="odo" id="odoInt"></span><span class="dec odo" id="odoDec"></span>
     </div>
-    <div class="then" id="then"></div>
   </div>
 
   <div class="lane" id="lane">
+    <div class="then" id="then"></div>
+    <div class="tip" id="tip" role="status"></div>
     <div class="runner" id="runner" aria-hidden="true">
       <div class="bob-wrap"><div class="bob">
         <div class="speed"><i></i><i></i><i></i></div>
@@ -288,7 +373,7 @@
     <div class="track" id="track">
       <div class="slab" id="slab"><span class="p"><svg class="riyal"><use href="#i-riyal"/></svg>23,999</span><span class="n">iPhone Duo</span></div>
     </div>
-    <div class="ends"><span><b>Today</b></span><span id="paidOff"></span></div>
+    <div class="ends"><span><b>Today</b></span><span class="hint" aria-hidden="true">drag to resplit</span><span id="paidOff"></span></div>
   </div>
 
   <div class="plans">
@@ -332,6 +417,8 @@
     return out;
   };
   const mon = d => d.toLocaleString('en-US',{month:'short'});
+  const longDate = d => `${d.getDate()} ${mon(d)} ${d.getFullYear()}`;
+  let paid = false;
 
   /* stage scaling */
   const wrap = $('pageWrap'), layer = $('pageLayer');
@@ -360,30 +447,76 @@
   /* track */
   const track = $('track');
   const pieces = Array.from({length:12}, (_,i) => {
-    const p = document.createElement('div'); p.className = 'piece' + (i===0?' today':'');
+    const p = document.createElement('button'); p.type='button'; p.className = 'piece' + (i===0?' today':'');
+    p.addEventListener('animationend', e => { if (e.animationName==='jolt') p.classList.remove('jolt'); });
     p.innerHTML = '<b class="d"></b><i class="m"></i>'; track.appendChild(p); return p;
   });
   function layout(gap = 6){
     const W = track.clientWidth, w = (W - (n-1)*gap)/n, ds = dates(n);
-    track.classList.toggle('tight', w < 44);
+    track.classList.toggle('tight', w < 44); track.classList.toggle('xtight', w < 30);
     pieces.forEach((p,i) => {
       if (i < n){
         p.style.left = (i*(w+gap))+'px'; p.style.width = w+'px'; p.style.opacity = 1;
         p.querySelector('.d').textContent = i===0 ? 'Now' : ds[i].getDate();
         p.querySelector('.m').textContent = i===0 ? '' : mon(ds[i]);
-        p.setAttribute('aria-hidden','true');
-      } else { p.style.left = W+'px'; p.style.width = '0px'; p.style.opacity = 0; }
+        p.removeAttribute('aria-hidden'); p.tabIndex = 0;
+        p.setAttribute('aria-label', `Payment ${i+1} of ${n}, ${fmt(calc(n).monthly)} riyals, ${i===0?'today':longDate(ds[i])}`);
+      } else { p.style.left = W+'px'; p.style.width = '0px'; p.style.opacity = 0; p.setAttribute('aria-hidden','true'); p.tabIndex = -1; }
     });
     const last = ds[n-1];
     $('paidOff').innerHTML = `Paid off <b>${last.getDate()} ${mon(last)} ${last.getFullYear()}</b>`;
   }
   new ResizeObserver(() => layout()).observe(track);
 
+  /* tap / hover a piece */
+  const tip = $('tip'); let tipFor = -1;
+  function showTip(i){
+    if (i < 0 || i >= n || track.classList.contains('dragging')) return hideTip();
+    tipFor = i; const p = pieces[i], ds = dates(n);
+    pieces.forEach((q,j) => q.classList.toggle('lift', j===i));
+    const laneW = $('lane').clientWidth, cx = p.offsetLeft + parseFloat(p.style.width)/2;
+    tip.innerHTML = `${R}<b>${fmt(calc(n).monthly)}</b> · ${i===0 ? (paid ? 'paid today' : 'due today') : longDate(ds[i])}`;
+    tip.style.top = track.offsetTop+'px';
+    const half = tip.offsetWidth/2;
+    tip.style.left = Math.min(Math.max(cx, half), laneW-half)+'px';
+    tip.classList.add('on');
+  }
+  function hideTip(){ tipFor = -1; tip.classList.remove('on'); pieces.forEach(q => q.classList.remove('lift')); }
+  pieces.forEach((p,i) => {
+    p.addEventListener('pointerenter', e => { if (e.pointerType==='mouse') showTip(i); });
+    p.addEventListener('pointerleave', e => { if (e.pointerType==='mouse') hideTip(); });
+    p.addEventListener('focus', () => showTip(i));
+    p.addEventListener('blur', hideTip);
+    p.addEventListener('click', () => { if (suppress) return; tipFor===i && !p.matches(':hover') ? hideTip() : showTip(i); });
+  });
+
+  /* drag across the pieces to resplit */
+  let drag = null, suppress = false;
+  track.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+    drag = {x:e.clientX, idx:PLANS.indexOf(n), id:e.pointerId, moved:false}; suppress = false;
+  });
+  track.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x;
+    if (!drag.moved && Math.abs(dx) > 8){ drag.moved = true; suppress = true; track.setPointerCapture(e.pointerId); track.classList.add('dragging'); hideTip(); }
+    if (!drag.moved) return;
+    const step = Math.round(dx / (track.clientWidth/7));
+    const k = PLANS[Math.min(Math.max(drag.idx+step,0),PLANS.length-1)];
+    if (k !== n) setPlan(k);
+  });
+  const endDrag = () => { if (!drag) return; drag = null; track.classList.remove('dragging'); setTimeout(()=>suppress=false, 0); };
+  track.addEventListener('pointerup', endDrag); track.addEventListener('pointercancel', endDrag);
+
   /* plan chips */
   const chips = $('chips');
+  const ind = document.createElement('span'); ind.className = 'ind'; ind.setAttribute('aria-hidden','true'); chips.appendChild(ind);
+  const chipEls = () => chips.querySelectorAll('.chip');
+  function moveInd(){ const b = chipEls()[PLANS.indexOf(n)]; if (!b) return; ind.style.width = b.offsetWidth+'px'; ind.style.transform = `translateX(${b.offsetLeft}px)`; }
+  new ResizeObserver(moveInd).observe(chips);
   PLANS.forEach(k => {
     const b = document.createElement('button'); b.className='chip'; b.setAttribute('role','radio');
-    b.innerHTML = k + (DISC[k] ? '<span class="off">-2%</span>' : '');
+    b.innerHTML = k + (DISC[k] ? '<span class="off">2% off</span>' : '<span class="off none">No discount</span>');
     b.setAttribute('aria-label', `${k} payments${DISC[k]?', 2% off':''}`);
     b.onclick = () => setPlan(k);
     b.onkeydown = e => {
@@ -399,16 +532,19 @@
     const c = calc(k), [int, dec] = fmt(c.monthly).split('.');
     odo($('odoInt'), int); odo($('odoDec'), '.'+dec);
     $('then').innerHTML = `then <b>${k-1} more</b> of ${R}<b>${fmt(c.monthly)}</b> ${salary?'on the 27th':'on the 3rd of each month'}`;
+    if (paid) resetPaid();
     $('cta').innerHTML = `Pay ${R}<b>${fmt(c.monthly)}</b> today`;
     const save = $('save');
     save.innerHTML = c.save ? `<span class="pill">2% off · you save ${R}${fmt(c.save)}</span>` : `Pick 4 or more payments to get 2% off`;
     if (c.save && !had){ save.classList.remove('pop'); void save.offsetWidth; save.classList.add('pop'); }
-    [...chips.children].forEach((b,i) => { const on = PLANS[i]===k; b.setAttribute('aria-checked', on); b.tabIndex = on?0:-1; if(on&&focus) b.focus(); });
+    moveInd();
+    [...chipEls()].forEach((b,i) => { const on = PLANS[i]===k; b.setAttribute('aria-checked', on); b.tabIndex = on?0:-1; if(on&&focus) b.focus(); });
     const sp = SPEED[k], r = $('runner');
     r.style.setProperty('--dur', sp.d+'s'); r.style.setProperty('--speed', sp.s);
     r.querySelector('.bob-wrap').style.rotate = sp.lean+'deg';
     if (prev !== k && opened){ r.classList.remove('hop'); void r.offsetWidth; r.classList.add('hop'); }
     layout();
+    if (tipFor >= 0) showTip(Math.min(tipFor, k-1));
     // widget mirrors the plan
     $('wInt').textContent = int; $('wDec').textContent = '.'+dec; $('wN').textContent = `${k} payments`;
     $('wDots').innerHTML = '<i></i>'.repeat(Math.min(k,12));
@@ -443,6 +579,43 @@
     f.animate([{opacity:1},{opacity:0}],{duration:120,fill:'forwards'}).finished.then(()=>f.remove());
   }
 
+  async function flyBack(){
+    const from = $('amount'), to = $('wAmt');
+    const a = from.getBoundingClientRect(), b = to.getBoundingClientRect();
+    if (reduce || !b.width) return;
+    const f = to.cloneNode(true); f.removeAttribute('id'); f.querySelector('em')?.remove();
+    f.classList.add('flyer'); f.style.fontSize = getComputedStyle(to).fontSize;
+    f.style.left = a.left+'px'; f.style.top = a.top+'px';
+    document.body.appendChild(f);
+    const s0 = a.height / f.offsetHeight, s1 = b.height / to.offsetHeight;
+    from.classList.add('hide');
+    const anim = f.animate([
+      {transform:`translate(0,0) scale(${s0})`},
+      {transform:`translate(${(b.left-a.left)*.45}px,${(b.top-a.top)*.6 - 50}px) scale(${(s0+s1)/2}) rotate(4deg)`, offset:.5},
+      {transform:`translate(${b.left-a.left}px,${b.top-a.top}px) scale(${s1})`}
+    ], {duration:700, easing:'cubic-bezier(.4,.1,.25,1)', fill:'forwards'});
+    anim.finished.then(() => f.animate([{opacity:1},{opacity:0}],{duration:140,fill:'forwards'}).finished.then(()=>f.remove()));
+  }
+
+  function resetPaid(){
+    paid = false; $('cta').classList.remove('done');
+    pieces[0].querySelector('.stampd')?.remove(); pieces.forEach(p => p.classList.remove('next'));
+    $('sheetLbl').textContent = 'You pay today';
+    const r = $('runner'); r.classList.remove('exit');
+  }
+
+  $('cta').onclick = () => {
+    if (paid) return;
+    paid = true; hideTip();
+    const s = document.createElement('span'); s.className='stampd'; s.textContent='PAID'; pieces[0].appendChild(s);
+    $('sheetLbl').textContent = 'Paid today';
+    const r = $('runner'); r.classList.remove('in'); r.classList.add('exit');
+    const nx = dates(n)[1];
+    setTimeout(() => { if (paid && n>1) pieces[1].classList.add('next'); }, reduce?0:450);
+    const cta = $('cta'); cta.classList.add('done');
+    cta.innerHTML = `Done. Next payment <b>${nx.getDate()} ${mon(nx)}</b>`;
+  };
+
   async function crack(){
     const slab = $('slab');
     track.classList.add('notrans'); layout(0);
@@ -471,6 +644,8 @@
     if (opened) return; opened = true;
     $('slab').classList.remove('gone');
     pieces.forEach(p => { p.classList.remove('jolt','hot'); });
+    $('amount').classList.remove('hide');
+    resetPaid(); hideTip();
     setPlan(n);
     document.body.classList.add('sheet-open');
     const r = $('runner'); r.classList.remove('in'); void r.offsetWidth;
@@ -480,16 +655,18 @@
     crack();
     r.classList.add('in');
     stamp();
-    $('close').focus({preventScroll:true});
+    $('close').focus({preventScroll:true, focusVisible:false});
   }
   function close(){
-    opened = false; document.body.classList.remove('sheet-open'); $('widget').focus({preventScroll:true});
+    if (!opened) return;
+    opened = false; hideTip(); flyBack();
+    document.body.classList.remove('sheet-open'); $('widget').focus({preventScroll:true, focusVisible:false});
   }
 
   $('widget').onclick = open;
   $('close').onclick = close; $('scrim').onclick = close;
   document.addEventListener('keydown', e => { if (e.key==='Escape' && opened) close(); });
-  $('replay').onclick = async () => { if (opened){ close(); await wait(650); } open(); };
+  $('replay').onclick = async () => { if (opened){ close(); await wait(900); } open(); };
 
   setPlan(6);
   setTimeout(open, reduce ? 0 : 1100);
